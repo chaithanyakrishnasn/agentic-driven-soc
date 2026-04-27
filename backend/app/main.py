@@ -18,7 +18,10 @@ _streamer_task: asyncio.Task | None = None
 
 
 async def _live_event_streamer() -> None:
-    """Push one synthetic event to connected WS clients every 5 s."""
+    """
+    Push one synthetic event to connected WS clients every 5 s.
+    Yields to real dataset replay when it is active.
+    """
     import random
     from datetime import datetime, timezone
     from app.data.synthetic_generator import generate_event_batch
@@ -29,6 +32,12 @@ async def _live_event_streamer() -> None:
             await asyncio.sleep(5)
             if manager.connection_count == 0:
                 continue
+
+            # Skip synthetic emission while real dataset replay is running
+            from app.datasets.replay import get_replayer
+            if get_replayer().get_status().get("running"):
+                continue
+
             event = random.choice(generate_event_batch(count=3, scenario_mix=True))
             classification = classify_event(event)
             await manager.broadcast_event("live_event", {
@@ -107,6 +116,7 @@ app = FastAPI(
         {"name": "tickets",     "description": "Ticket engine — lifecycle, SLA, escalation, activities"},
         {"name": "projects",    "description": "Project management — security score, analyst assignment"},
         {"name": "audit",       "description": "Immutable hash-chained audit log — query, search, verify"},
+        {"name": "datasets",    "description": "Real public dataset ML — download NSL-KDD / UNSW-NB15, train IsolationForest, benchmark accuracy"},
     ],
 )
 

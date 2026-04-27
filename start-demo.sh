@@ -36,11 +36,33 @@ done
 
 echo ""
 
+# Check / bootstrap real datasets (one-time, ~200 MB)
+echo " Checking real datasets..."
+cd /home/krishna/threatvision/backend
+MISSING=$(python3 -c "
+from app.datasets.registry import is_cached, DATASETS
+missing = [d for d in DATASETS if not is_cached(d)]
+print(' '.join(missing))
+" 2>/dev/null)
+if [ -n "$MISSING" ]; then
+    echo " Downloading real datasets (one-time, ~200 MB): $MISSING"
+    python3 -m app.datasets download
+    echo " Pre-training models on real data (runs in background)..."
+    python3 -m app.datasets benchmark > /tmp/benchmark_results.txt 2>&1 &
+    echo " Datasets downloaded — benchmark running in background"
+else
+    echo " Real datasets already cached"
+fi
+echo ""
+
 # Seed database
 echo " Seeding demo data..."
 cd /home/krishna/threatvision/backend
 python3 -m app.data.seed_db
 echo " Demo data seeded"
+echo " Seeding analysts and demo tickets..."
+python3 -m app.data.seed_analysts
+echo " Analysts seeded"
 echo ""
 
 # Start backend

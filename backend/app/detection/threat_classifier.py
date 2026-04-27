@@ -329,31 +329,34 @@ def _schedule_classification_audit(
     Fire-and-forget audit log for threat classification.
     Runs as a background asyncio task — never blocks the classifier.
     """
-    from app.services.audit_service import fire_and_forget, log_event
-
-    fire_and_forget(log_event(
-        actor_type="system",
-        actor_id="threat_classifier",
-        action="threat_classified",
-        target_type="event",
-        target_id=result.event_id or "unknown",
-        result="success" if not result.is_false_positive else "success",
-        confidence=result.confidence,
-        duration_ms=int(result.processing_time_ms),
-        metadata={
-            "threat_type": result.threat_type,
-            "severity": result.severity,
-            "confidence": result.confidence,
-            "rule_matches": result.rule_matches,
-            "anomaly_score": result.anomaly_score,
-            "is_false_positive": result.is_false_positive,
-            "cross_layer_correlated": result.cross_layer_correlated,
-            "bytes_sent": int(event.get("bytes_sent") or 0),
-            "source_ip": event.get("source_ip"),
-            "dest_ip": event.get("dest_ip"),
-            "mitre_techniques": result.mitre_techniques[:3],
-        },
-    ))
+    import asyncio
+    from app.services.audit_service import log_event
+    try:
+        asyncio.get_running_loop().create_task(log_event(
+            actor_type="system",
+            actor_id="threat_classifier",
+            action="threat_classified",
+            target_type="event",
+            target_id=result.event_id or "unknown",
+            result="success" if not result.is_false_positive else "success",
+            confidence=result.confidence,
+            duration_ms=int(result.processing_time_ms),
+            metadata={
+                "threat_type": result.threat_type,
+                "severity": result.severity,
+                "confidence": result.confidence,
+                "rule_matches": result.rule_matches,
+                "anomaly_score": result.anomaly_score,
+                "is_false_positive": result.is_false_positive,
+                "cross_layer_correlated": result.cross_layer_correlated,
+                "bytes_sent": int(event.get("bytes_sent") or 0),
+                "source_ip": event.get("source_ip"),
+                "dest_ip": event.get("dest_ip"),
+                "mitre_techniques": result.mitre_techniques[:3],
+            },
+        ))
+    except RuntimeError:
+        pass  # No running event loop — skip audit in test/seed context
 
 
 # ── Module-level singleton + legacy function ──────────────────────────────────

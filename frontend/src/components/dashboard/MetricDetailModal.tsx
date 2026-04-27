@@ -5,6 +5,72 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { AlertCircle, Zap, Activity, Info, CheckCircle } from 'lucide-react'
 import { dashboardExtApi } from '@/lib/api'
 
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+
+function BenchmarkSection() {
+  const [benchmarks, setBenchmarks] = useState<any[]>([])
+
+  useEffect(() => {
+    fetch(`${BASE_URL}/api/v1/datasets/benchmarks/summary`)
+      .then(r => r.ok ? r.json() : [])
+      .then(setBenchmarks)
+      .catch(() => {})
+  }, [])
+
+  if (benchmarks.length === 0) return null
+
+  return (
+    <div style={{
+      background: '#141d35',
+      border: '1px solid #1e2d4a',
+      borderRadius: '8px',
+      padding: '14px 16px',
+    }}>
+      <div style={{ color: '#00d4ff', fontSize: '12px', fontWeight: 600, marginBottom: '12px' }}>
+        MODEL PERFORMANCE ON REAL DATASETS
+      </div>
+      {benchmarks.map(b => (
+        <div key={b.dataset_id} style={{
+          padding: '10px 12px',
+          background: '#0a0e1a',
+          borderRadius: '6px',
+          marginBottom: '8px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '6px',
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ color: '#e8eaf0', fontWeight: 600, fontSize: '13px' }}>{b.name}</span>
+            <span style={{ color: '#6b7a99', fontSize: '11px' }}>
+              {b.samples.toLocaleString()} records
+            </span>
+          </div>
+          {b.benchmark ? (
+            <div style={{ display: 'flex', gap: '14px', fontSize: '11px', flexWrap: 'wrap' }}>
+              <span style={{ color: '#6b7a99' }}>
+                Accuracy <span style={{ color: '#00ff9d' }}>{(b.benchmark.accuracy * 100).toFixed(1)}%</span>
+              </span>
+              <span style={{ color: '#6b7a99' }}>
+                Precision <span style={{ color: '#00d4ff' }}>{(b.benchmark.precision * 100).toFixed(1)}%</span>
+              </span>
+              <span style={{ color: '#6b7a99' }}>
+                Recall <span style={{ color: '#ffb800' }}>{(b.benchmark.recall * 100).toFixed(1)}%</span>
+              </span>
+              <span style={{ color: '#6b7a99' }}>
+                F1 <span style={{ color: '#ff3b6b' }}>{b.benchmark.f1_score.toFixed(3)}</span>
+              </span>
+            </div>
+          ) : (
+            <span style={{ color: '#6b7a99', fontSize: '11px', fontStyle: 'italic' }}>
+              {b.cached ? 'Not yet benchmarked — call POST /datasets/{id}/train then /benchmark' : 'Dataset not downloaded'}
+            </span>
+          )}
+        </div>
+      ))}
+    </div>
+  )
+}
+
 interface Props {
   isOpen: boolean
   onClose: () => void
@@ -253,6 +319,11 @@ export function MetricDetailModal({ isOpen, onClose, metricType }: Props) {
                         ))}
                       </ul>
                     </div>
+                  )}
+
+                  {/* Real dataset benchmark results — shown for detection/confidence metrics */}
+                  {(metricType === 'detection_rate' || metricType === 'confidence') && (
+                    <BenchmarkSection />
                   )}
                 </>
               ) : null}

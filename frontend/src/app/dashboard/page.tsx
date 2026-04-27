@@ -10,6 +10,7 @@ import {
   MetricCards, IncidentFeed, ThreatTimeline, AttackMap,
   SimulationPanel, ConnectionStatus, LiveEventsPanel, IncidentModal,
 } from '@/components/dashboard'
+import DatasetSelector from '@/components/dashboard/DatasetSelector'
 import { useStore } from '@/lib/store'
 import { getWsClient, useWebSocket } from '@/lib/websocket'
 import { dashboardApi, incidentsApi, alertsApi, liveEventsApi, ingestionApi } from '@/lib/api'
@@ -284,8 +285,19 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* RIGHT PANEL — Simulation, full height */}
-        <SimulationPanel />
+        {/* RIGHT PANEL — Dataset Selector + Simulation */}
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '6px',
+          minHeight: 0,
+          overflow: 'hidden',
+        }}>
+          <DatasetSelector />
+          <div style={{ flex: 1, minHeight: 0, overflow: 'hidden' }}>
+            <SimulationPanel />
+          </div>
+        </div>
 
       </div>
 

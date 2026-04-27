@@ -71,3 +71,9 @@ backend/chroma/
 # Temp files
 /tmp/
 *.tmp
+
+# Real dataset cache (large files, downloaded on demand)
+backend/app/datasets/cache/*.csv
+backend/app/datasets/cache/*.txt
+backend/app/datasets/cache/*.parquet
+backend/app/datasets/cache/*.tmp

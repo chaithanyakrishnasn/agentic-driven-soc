@@ -142,17 +142,21 @@ def _fire_red_audit(
     metadata: dict,
 ) -> None:
     """Schedule a fire-and-forget audit log entry for RedAgent decisions."""
-    from app.services.audit_service import fire_and_forget, log_event
-    fire_and_forget(log_event(
-        actor_type="agent",
-        actor_id="red_agent",
-        action=action,
-        target_type="simulation",
-        target_id=target_id,
-        result="success",
-        reasoning=reasoning,
-        metadata=metadata,
-    ))
+    import asyncio
+    from app.services.audit_service import log_event
+    try:
+        asyncio.get_running_loop().create_task(log_event(
+            actor_type="agent",
+            actor_id="red_agent",
+            action=action,
+            target_type="simulation",
+            target_id=target_id,
+            result="success",
+            reasoning=reasoning,
+            metadata=metadata,
+        ))
+    except RuntimeError:
+        pass  # No running event loop — skip audit in test/seed context
 
 
 class RedAgent:
