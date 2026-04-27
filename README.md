@@ -29,19 +29,19 @@ ThreatVision combines real-time threat detection, AI-driven incident analysis, a
 │  │  Zustand WS  │   │  WS / REST   │   │  Red · Blue · Plays  │  │
 │  └──────────────┘   └──────────────┘   └──────────────────────┘  │
 │                            │                                     │
-│           ┌────────────────┼────────────────┐                   │
-│           ▼                ▼                ▼                   │
-│      ┌─────────┐    ┌──────────┐    ┌──────────┐               │
-│      │Postgres │    │  Redis   │    │ ChromaDB │               │
-│      │(events) │    │(streams) │    │(vectors) │               │
-│      └─────────┘    └──────────┘    └──────────┘               │
+│           ┌────────────────┼────────────────┐                    │
+│           ▼                ▼                ▼                    │
+│      ┌─────────┐    ┌──────────┐    ┌──────────┐                 │
+│      │Postgres │    │  Redis   │    │ ChromaDB │                 │
+│      │(events) │    │(streams) │    │(vectors) │                 │
+│      └─────────┘    └──────────┘    └──────────┘                 │
 │                                                                  │
-│  ┌───────────────────────────────────────────────────────────┐  │
-│  │                 Dataset ML Pipeline                       │  │
-│  │  NSL-KDD (22 MB) + UNSW-NB15 (183 MB parquet)            │  │
-│  │  Download → Load → Feature Extract → Train → Benchmark   │  │
-│  │  Replay Engine → Redis Stream → Classifier → Dashboard   │  │
-│  └───────────────────────────────────────────────────────────┘  │
+│  ┌───────────────────────────────────────────────────────────┐   │
+│  │                 Dataset ML Pipeline                       │   │
+│  │  NSL-KDD (22 MB) + UNSW-NB15 (183 MB parquet)             │   │
+│  │  Download → Load → Feature Extract → Train → Benchmark    │   │
+│  │  Replay Engine → Redis Stream → Classifier → Dashboard    │   │
+│  └───────────────────────────────────────────────────────────┘   │
 └──────────────────────────────────────────────────────────────────┘
 ```
 
