@@ -69,7 +69,7 @@ ThreatVision combines real-time threat detection, AI-driven incident analysis, a
 ### 1. Clone and configure
 
 ```bash
-git clone https://github.com/chaithanyakrishnasn/threatvision
+git clone https://github.com/chaithanyakrishnasn/agentic-driven-soc
 cd threatvision
 cp .env.example .env
 # Add your ANTHROPIC_API_KEY to .env (optional — agents have fallbacks)
