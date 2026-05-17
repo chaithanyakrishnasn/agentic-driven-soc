@@ -1,6 +1,6 @@
-# ThreatVision (SentinelAI)
+# Agentic Security Operations Platform with Real-Time ML Detection
 
-AI-Driven Threat Detection & Simulation Engine — a full-stack SOC (Security Operations Center) platform powered by Claude AI, real public IDS datasets, and a live event replay engine.
+AI-Driven Threat Detection & Simulation Engine — a full-stack SOC (Security Operations Center) platform powered by Claude AI, AI Agents, real public IDS datasets, and a live event replay engine.
 
 ## Overview
 
